@@ -1,25 +1,22 @@
 require("dotenv").config();
 const express = require("express");
-const router = express.Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User = require("../model/User");
+const router = express.Router();
+const speakeasy = require("speakeasy");
+const QRCode = require("qrcode");
 
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
+    console.log(user);
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
-
     const matchPassword = await bcrypt.compare(password, user.password);
     if (matchPassword) {
-      // Generate and send a JWT token if login is successful
-      // const jwtFToken = jwt.sign({ email: user.email }, jwtSecretKey, {
-      //   expiresIn: "20m",
-      // });
-      // console.log("token", jwtFToken);
       res.json({ message: "Login successful", qrCodeUrl: user.qrCodeUrl });
     } else {
       res.status(401).json({ error: "Invalid credentials" });
@@ -31,12 +28,16 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/signup", async (req, res) => {
-  console.log("In sign in");
   try {
     const userData = req.body;
     const hashedPassword = await bcrypt.hash(userData.password, 10);
 
-    // Generate a secret for the user
+    const user = await User.findOne({ email: userData.email });
+
+    if (user) {
+      return res.status(401).json({ error: "Email is already register." });
+    }
+
     const mfaSecret = speakeasy.generateSecret({
       length: 20,
       name: "employee-manager",
@@ -54,8 +55,7 @@ router.post("/signup", async (req, res) => {
 
     // Generate a QR code for the user to scan
     const qrCode = await QRCode.toDataURL(mfaSecret.otpauth_url);
-
-    res.json({ newUser, qrCodeUrl: qrCode });
+    res.status(200).json({ newUser, qrCodeUrl: qrCode });
     console.log("Secret Key:", mfaSecret.base32);
     console.log("QR Code Image URL:", qrCode);
   } catch (error) {
