@@ -1,6 +1,6 @@
 # Todo Task List - CRUD API
 
-This Node.js project provides a CRUD API for managing a todo task list.
+This Node.js project provides a CRUD API for managing a employee  list.
 
 ## Table of Contents
 
@@ -62,6 +62,10 @@ The `Employee` schema represents the structure of a employee list in the databas
 - `dob`: dob of the employee.
 - `designation`: designation of the employee
 - `education`: education of the employee.
+
+#### Swagger
+
+- The swagger will be run on `http://localhost:8080/api-docs/`
 
 ## Usage
 
