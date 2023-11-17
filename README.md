@@ -63,7 +63,9 @@ The `Employee` schema represents the structure of a employee list in the databas
 - `designation`: designation of the employee
 - `education`: education of the employee.
 
-#### Swagger
+## Swagger
+
+### How to access swagger
 
 - The swagger will be run on `http://localhost:8080/api-docs/`
 
